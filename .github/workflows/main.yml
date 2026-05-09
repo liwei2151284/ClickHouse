@@ -30,6 +30,7 @@ jobs:
       JF_GIT_OWNER: ${{ github.repository_owner }}
       JF_GIT_PROVIDER: 'github'
       JFROG_CLI_LOG_LEVEL: "DEBUG"
+      JF_PATH_EXCLUSIONS: "*git*;*node_modules*;*target*;*venv*;*test*;contrib/thrift-cmake/*"
       CI: "TRUE"
     steps:
       - name: Download Frogbot V3
