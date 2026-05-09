@@ -45,21 +45,36 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     env:
-      JF_GIT_API_ENDPOINT: 'https://api.github.com' # for github SH only
+      JF_GIT_API_ENDPOINT: "https://api.github.com"
       JF_GIT_BASE_BRANCH: ${{ github.ref_name }}
       JF_URL: ${{ secrets.JF_URL }}
       JF_ACCESS_TOKEN: ${{ secrets.JF_ACCESS_TOKEN }}
       JF_GIT_TOKEN: ${{ github.token }}
-      JF_GIT_PROVIDER: 'github'
+      JF_GIT_PROVIDER: "github"
       JF_GIT_OWNER: ${{ github.repository_owner }}
       JF_GIT_REPO: ${{ github.event.repository.name }}
       JFROG_CLI_LOG_LEVEL: "DEBUG"
       CI: "TRUE"
+
     steps:
-      - name: Checkout repository
+      - name: Checkout repository with submodules
         uses: actions/checkout@v4
         with:
-          ref: master
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+          submodules: recursive
+          token: ${{ github.token }}
+
+      - name: Force update ClickHouse submodules
+        run: |
+          git submodule sync --recursive
+          git submodule update --init --recursive --jobs 12
+
+      - name: Verify submodules
+        run: |
+          git submodule status --recursive | head -100
+          find contrib/thrift-cmake -name "config.h.in" -print || true
+          ls -la contrib/thrift-cmake/build/cmake || true
 
       - name: Download and run Frogbot V3
         run: |
