@@ -20,7 +20,7 @@ jobs:
     if: github.event_name == 'pull_request_target'
     runs-on: devf-dind-amd-scale-set # ubuntu-latest
     env:
-      JF_GIT_API_ENDPOINT: 'https://github.com/api/v3' # for github SH only
+      JF_GIT_API_ENDPOINT: 'https://api.github.com' # for github SH only
       JF_GIT_PULL_REQUEST_ID: ${{ github.event.pull_request.number }}
       JF_GIT_BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
       JF_URL: ${{ secrets.JF_URL }}
